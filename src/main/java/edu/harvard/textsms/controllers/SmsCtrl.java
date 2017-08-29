@@ -46,6 +46,9 @@ public class SmsCtrl {
 	@Value("${config.sms.api_url}")
 	private String sms_url;
 	
+	@Value("${config.sms.phone}")
+	private String phone;
+	
 	
 	SmsCtrl() {
 		smsModel=new SmsModel();
@@ -63,7 +66,7 @@ public class SmsCtrl {
 		params.add(new BasicNameValuePair("api_key",this.api_key));
 		params.add(new BasicNameValuePair("api_secret",this.api_secret));
 		params.add(new BasicNameValuePair("to","1" + sms.getPhone()));
-		params.add(new BasicNameValuePair("from","12015109949"));
+		params.add(new BasicNameValuePair("from",this.phone));
 		params.add(new BasicNameValuePair("text",sms.getBody()));
 		
 		post.setEntity(new UrlEncodedFormEntity(params));
