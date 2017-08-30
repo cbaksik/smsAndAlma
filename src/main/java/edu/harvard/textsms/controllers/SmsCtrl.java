@@ -15,8 +15,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,9 +42,6 @@ public class SmsCtrl {
 	@Value("${config.sms.api_key}")
 	private String api_key;
 	
-	@Value("${config.sms.api_secret}")
-	private String api_secret;
-	
 	@Value("${config.sms.api_url}")
 	private String sms_url;
 	
@@ -57,19 +56,35 @@ public class SmsCtrl {
 	@RequestMapping(value="/sendsms", method=RequestMethod.POST)
 	public SmsModel sendSMS(@RequestBody SmsModel sms, @RequestHeader(value="User-Agent") String user_agent) throws Exception {
 		
+		String p="1"+sms.getPhone();
+		List<String> ph=new ArrayList<String>();
+		ph.add(p);
+		JSONObject json=new JSONObject();
+		json.put("content", sms.getBody());
+		json.put("to", ph);
+		//json.put("from", this.phone);
+		
+		StringEntity myParams = new StringEntity(json.toString());
+		
+		System.out.println("*** myParams ***");
+		System.out.println(myParams);
+		
 		HttpClient client = HttpClients.createDefault();
 		HttpPost post = new HttpPost(this.sms_url);
-		//post.setHeader("Content-type", "application/json");
-		post.setHeader("User_Agent", user_agent);
+		post.addHeader("Content-type", "application/json");
+		post.addHeader("Accept", "application/json");
+		post.addHeader("Authorization", this.api_key);
+		post.addHeader("User_Agent", user_agent);
 		
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("api_key",this.api_key));
-		params.add(new BasicNameValuePair("api_secret",this.api_secret));
-		params.add(new BasicNameValuePair("to","1" + sms.getPhone()));
-		params.add(new BasicNameValuePair("from",this.phone));
-		params.add(new BasicNameValuePair("text",sms.getBody()));
+		//List<NameValuePair> params = new ArrayList<NameValuePair>();
+		//params.add(new BasicNameValuePair("to","1" + sms.getPhone()));
+		//params.add(new BasicNameValuePair("from",this.phone));
+		//params.add(new BasicNameValuePair("content",sms.getBody()));
 		
-		post.setEntity(new UrlEncodedFormEntity(params));
+		//post.setEntity(new UrlEncodedFormEntity(params));
+		post.setEntity(myParams);
+	
+		
 		HttpResponse response = client.execute(post);
 		
 		System.out.println("\nSending 'POST' request to URL : " + this.sms_url);
