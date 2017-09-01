@@ -48,6 +48,9 @@ public class SmsCtrl {
 	@Value("${config.sms.phone}")
 	private String phone;
 	
+	@Value("${config.sms.version}")
+	private String version;
+	
 	
 	SmsCtrl() {
 		smsModel=new SmsModel();
@@ -56,21 +59,23 @@ public class SmsCtrl {
 	@RequestMapping(value="/sendsms", method=RequestMethod.POST)
 	public SmsModel sendSMS(@RequestBody SmsModel sms, @RequestHeader(value="User-Agent") String user_agent) throws Exception {
 		
-		String p="1"+sms.getPhone();
+		String p="1" + sms.getPhone();
 		List<String> ph=new ArrayList<String>();
 		ph.add(p);
 		JSONObject json=new JSONObject();
-		json.put("content", sms.getBody());
+		json.put("text", sms.getBody());
 		json.put("to", ph);
-		//json.put("from", this.phone);
+		//json.put("mo", 1);
+		json.put("from", this.phone);
 		
 		StringEntity myParams = new StringEntity(json.toString());
 		
 		System.out.println("*** myParams ***");
-		System.out.println(myParams);
+		System.out.println(json.toString());
 		
 		HttpClient client = HttpClients.createDefault();
 		HttpPost post = new HttpPost(this.sms_url);
+		post.addHeader("X-Version",this.version);
 		post.addHeader("Content-type", "application/json");
 		post.addHeader("Accept", "application/json");
 		post.addHeader("Authorization", this.api_key);
