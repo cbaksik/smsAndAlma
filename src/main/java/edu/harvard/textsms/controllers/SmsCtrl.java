@@ -49,6 +49,9 @@ public class SmsCtrl {
 	@Value("${config.sms.version}")
 	private String version;
 	
+	@Value("${config.sms.mo}")
+	private String mo;
+	
 	
 	SmsCtrl() {
 		smsModel=new SmsModel();
@@ -63,7 +66,7 @@ public class SmsCtrl {
 		JSONObject json=new JSONObject();
 		json.put("text", sms.getBody());
 		json.put("to", ph);
-		json.put("mo", 1);
+		json.put("mo", this.mo);
 		json.put("from", this.phone);
 		
 		StringEntity myParams = new StringEntity(json.toString(),ContentType.APPLICATION_JSON);
