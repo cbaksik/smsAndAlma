@@ -11,13 +11,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -58,17 +56,17 @@ public class SmsCtrl {
 	
 	@RequestMapping(value="/sendsms", method=RequestMethod.POST)
 	public SmsModel sendSMS(@RequestBody SmsModel sms, @RequestHeader(value="User-Agent") String user_agent) throws Exception {
-		
+			
 		String p="1" + sms.getPhone();
 		List<String> ph=new ArrayList<String>();
 		ph.add(p);
 		JSONObject json=new JSONObject();
 		json.put("text", sms.getBody());
 		json.put("to", ph);
-		//json.put("mo", 1);
+		json.put("mo", 1);
 		json.put("from", this.phone);
 		
-		StringEntity myParams = new StringEntity(json.toString());
+		StringEntity myParams = new StringEntity(json.toString(),ContentType.APPLICATION_JSON);
 		
 		System.out.println("*** myParams ***");
 		System.out.println(json.toString());
@@ -81,12 +79,6 @@ public class SmsCtrl {
 		post.addHeader("Authorization", this.api_key);
 		post.addHeader("User_Agent", user_agent);
 		
-		//List<NameValuePair> params = new ArrayList<NameValuePair>();
-		//params.add(new BasicNameValuePair("to","1" + sms.getPhone()));
-		//params.add(new BasicNameValuePair("from",this.phone));
-		//params.add(new BasicNameValuePair("content",sms.getBody()));
-		
-		//post.setEntity(new UrlEncodedFormEntity(params));
 		post.setEntity(myParams);
 	
 		
