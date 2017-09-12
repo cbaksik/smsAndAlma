@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.harvard.textsms.models.SmsAdminModel;
-import edu.harvard.textsms.models.SmsModel;
+import edu.harvard.textsms.models.SmsTracking;
 import edu.harvard.textsms.services.SmsService;
 
 @PropertySource("classpath:application.properties")
@@ -38,27 +38,27 @@ public class SmsAdminCtrl {
 	@Value("${config.sms.admin.password}")
 	private String password;
 	
-	private List<SmsModel> listSMS;
+	private List<SmsTracking> listSMS;
 	
 	// constructor
 	SmsAdminCtrl() {
-		this.listSMS = new ArrayList<SmsModel>();
+		this.listSMS = new ArrayList<SmsTracking>();
 	}
 	
 	@RequestMapping(value="/smsAdmin", method=RequestMethod.POST)
-	public List<SmsModel> getSMSList(@RequestBody SmsAdminModel smsAdminModel) {
+	public List<SmsTracking> getSMSList(@RequestBody SmsAdminModel smsAdminModel) {
 		if(this.username.equals(smsAdminModel.getUsername()) && this.password.equals(smsAdminModel.getPassword())) {
 			this.listSMS = smsService.getSmsList();
 		} else {
-			this.listSMS = new ArrayList<SmsModel>();
+			this.listSMS = new ArrayList<SmsTracking>();
 		}
 		logger.debug("*** list sms ***");
 		return this.listSMS;
 	}
 	
 	@RequestMapping(value="/smsAdmin", method=RequestMethod.DELETE)
-	public List<SmsModel> deleteSMSList(@RequestBody SmsAdminModel smsAdminModel) {
-		this.listSMS = new ArrayList<SmsModel>();
+	public List<SmsTracking> deleteSMSList(@RequestBody SmsAdminModel smsAdminModel) {
+		this.listSMS = new ArrayList<SmsTracking>();
 		if(this.username.equals(smsAdminModel.getUsername()) && this.password.equals(smsAdminModel.getPassword())) {
 			smsService.setSmsList(listSMS);
 		} 

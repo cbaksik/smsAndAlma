@@ -149,11 +149,11 @@ public class JwtService {
 		}
 		
 		logger.debug("*** validateJWTtoken ****");
-		logger.debug("expire date = " + tokenProfile.getExpireDate());
-		logger.debug("vid = " + tokenProfile.getVid());
-		logger.debug("institution = " + tokenProfile.getInstitution());
-		logger.debug("onCampus = " + tokenProfile.getOnCampus());
-		logger.debug("iss = " + tokenProfile.getIss());
+		//logger.debug("expire date = " + tokenProfile.getExpireDate());
+		//logger.debug("vid = " + tokenProfile.getVid());
+		//logger.debug("institution = " + tokenProfile.getInstitution());
+		//logger.debug("onCampus = " + tokenProfile.getOnCampus());
+		//logger.debug("iss = " + tokenProfile.getIss());
 		logger.debug("ip = " + tokenProfile.getIp());
 		logger.debug("iat = " + tokenProfile.getIat());
 		logger.debug("userName = " + tokenProfile.getUserName());

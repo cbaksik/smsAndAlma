@@ -9,6 +9,7 @@ target/
 .settings
 .springBeans
 src/main/resources/application.properties
+logs
 
 ### IntelliJ IDEA ###
 .idea

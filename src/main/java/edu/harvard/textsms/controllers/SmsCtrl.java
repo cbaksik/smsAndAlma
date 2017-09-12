@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.harvard.textsms.models.SmsModel;
+import edu.harvard.textsms.models.SmsTracking;
 import edu.harvard.textsms.models.TokenProfile;
 import edu.harvard.textsms.services.JwtService;
 import edu.harvard.textsms.services.SmsService;
@@ -111,11 +112,11 @@ public class SmsCtrl {
 			sms.setMaximumSend(1);
 			String today=ft.format(date);
 			// access service info in memory to validate the maximum number of sms can send per day
-			List<SmsModel> listSMS=smsService.getSmsList();
+			List<SmsTracking> listSMS=smsService.getSmsList();
 			for(int i=0; i < listSMS.size(); i++) {
-				SmsModel data=listSMS.get(i);
-				String mydate = ft.format(data.getDateTime());
-				if(mydate.equals(today) && sms.getSessionToken().equals(data.getSessionToken())) {
+				SmsTracking data=listSMS.get(i);
+				String mydate = ft.format(data.getSendDate());
+				if(mydate.equals(today) && sms.getIp().equals(data.getIp())) {
 					if(data.getMaximumSend() >= this.maximumSend) {
 						smsFlag=false;
 					} else {
@@ -126,11 +127,18 @@ public class SmsCtrl {
 					listSMS.remove(i);
 				}
 			}
-			listSMS.add(sms);
-			smsService.setSmsList(listSMS);
-			
 			// check if a user reach maximum of sending sms text per day
 			if(smsFlag) {
+				//add to the list in memory
+				SmsTracking tracking=new SmsTracking();
+				tracking.setIp(tokenProfile.getIp());
+				tracking.setPhone(sms.getPhone());
+				tracking.setBody(sms.getBody());
+				tracking.setMaximumSend(sms.getMaximumSend());
+				tracking.setSendDate(sms.getDateTime());
+				listSMS.add(tracking);
+				smsService.setSmsList(listSMS);
+				
 				String p="1" + sms.getPhone();
 				List<String> ph=new ArrayList<String>();
 				ph.add(p);
@@ -181,21 +189,21 @@ public class SmsCtrl {
 				smsModel=sms;
 				smsModel.setMsg("You have reached the maximum sending sms per day. We allow only " + this.maximumSend + " sms per day.");
 				logger.debug("*** Reach the maximum sms sending per day ***");
-				logger.debug("session token = " + sms.getSessionToken());
+				logger.debug("ip = " + sms.getIp());
 				logger.debug("Phone = " + sms.getPhone());
 				logger.debug("body = " + sms.getBody());
 			}
 			} else {
 				logger.debug("*** Invalid toke. It is not primo token ***");
 				logger.debug("JWT Token = " + sms.getToken());
-				logger.debug("session token = " + sms.getSessionToken());
+				logger.debug("ip = " + sms.getIp());
 				logger.debug("Phone = " + sms.getPhone());
 				logger.debug("body = " + sms.getBody());
 			}
 		} else {
 			logger.debug("*** Missing header token and missing user session token ***");
 			logger.debug("JWT Token = " + sms.getToken());
-			logger.debug("session token = " + sms.getSessionToken());
+			logger.debug("ip = " + sms.getIp());
 			logger.debug("Phone = " + sms.getPhone());
 			logger.debug("body = " + sms.getBody());
 			smsModel=sms;
