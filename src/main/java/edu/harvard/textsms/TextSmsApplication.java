@@ -1,5 +1,7 @@
 package edu.harvard.textsms;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,8 +16,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @SpringBootApplication
 public class TextSmsApplication {
 	
-	@Value("${config.location.origin}")
-	private String locationOrigin;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Value("${config.location.origin.prod}")
+	private String originPROD;
+	
+	@Value("${config.location.origin.qa}")
+	private String originQA;
+	
+	@Value("${config.location.origin.dev}")
+	private String originDEV;
 
 	public static void main(String[] args) {
 		
@@ -28,9 +38,11 @@ public class TextSmsApplication {
 	        @Override
 	        public void addCorsMappings(CorsRegistry registry) {
 	        		
-	        		System.out.println(locationOrigin);
+	        		logger.debug("Origin request allow from Prod : " + originPROD);
+	        		logger.debug("Origin request allow from QA : " + originQA);
+	        		logger.debug("Origin request allow from DEV : " + originDEV);
 	        	
-	            registry.addMapping("/**/**").allowedOrigins(locationOrigin)
+	            registry.addMapping("/**/**").allowedOrigins(originPROD, originQA, originDEV)
 	            .allowCredentials(true)
 	            .allowedMethods("GET","POST","DELETE");
 	
